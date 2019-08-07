@@ -1,3 +1,5 @@
+language: generic
+cache: bundler
 sudo: required
 services:
   - docker
@@ -6,17 +8,34 @@ before_install:
   - docker build -t thepratyush/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run thepratyush/react-test npm test -- --coverage
+  - docker run -e CI=true thepratyush/react-test npm test
+  #older way which is updated based on the new jest library
+  #- docker run thepratyush/react-test npm test -- --coverage
 
 after_success:
   - docker build -t thepratyush/multi-client ./client
   - docker build -t thepratyush/multi-nginx ./nginx
   - docker build -t thepratyush/multi-server ./server
   - docker build -t thepratyush/multi-worker ./worker
-  #log in to docker cli
+  #log in to docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   #take those images and push them to docker hub
   - docker push thepratyush/multi-client
   - docker push thepratyush/multi-nginx
   - docker push thepratyush/multi-server
   - docker push thepratyush/multi-worker
+
+deploy:
+  provider: elasticbeanstalk
+  region: us-east-2
+  app: multi-docker
+  env: MultiDocker-env
+  bucket_name: elasticbeanstalk-us-east-2-770097753856
+  bucket_path: docker-multi
+  on:
+    branch: master
+  access_key_id: 
+    secure: $AWS_ACCESS_KEY
+  secret_access_key: 
+    secure: $AWS_SECRET_KEY
+    
