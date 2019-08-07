@@ -3,20 +3,20 @@ services:
   - docker
 
 before_install:
-  - docker build -t pratyush/react-test -f ./client/Dockerfile.dev ./client
+  - docker build -t thepratyush/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run pratyush/react-test npm test -- --coverage
+  - docker run thepratyush/react-test npm test -- --coverage
 
 after_success:
-  - docker build -t pratyush/multi-client ./client
-  - docker build -t pratyush/multi-nginx ./nginx
-  - docker build -t pratyush/multi-server ./server
-  - docker build -t pratyush/multi-worker ./worker
+  - docker build -t thepratyush/multi-client ./client
+  - docker build -t thepratyush/multi-nginx ./nginx
+  - docker build -t thepratyush/multi-server ./server
+  - docker build -t thepratyush/multi-worker ./worker
   #log in to docker cli
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   #take those images and push them to docker hub
-  - docker push pratyush/multi-client
-  - docker push pratyush/multi-nginx
-  - docker push pratyush/multi-server
-  - docker push pratyush/multi-worker
+  - docker push thepratyush/multi-client
+  - docker push thepratyush/multi-nginx
+  - docker push thepratyush/multi-server
+  - docker push thepratyush/multi-worker
